@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useRef } from 'react';
 import type { Stats } from '@/app/main/page';
 import { formatTime } from '@/services/Time';
+import { speedColor } from '@/services/ResultVisualization';
 
 type StatsDashboardProps = {
     stats: Stats;
@@ -31,20 +31,25 @@ export default function StatsDashboard({ stats }: StatsDashboardProps) {
 
             <hr />
 
-            <details>
-                <summary className="cursor-pointer text-blue-600">
-                    Detailed keystrokes
-                </summary>
+            <ul className="tracking-wide font-mono text-lg">
+                {stats.timestamps_firsts.map((t, i) => {
+                    if (!t.key) return null;
 
-                <ul className="text-left text-sm mt-2 space-y-1 max-h-[150px] overflow-auto">
-                    {stats.timestamps.map((t, i) => (
-                        <li key={i}>
-                            <span className="font-mono">{t.key}</span> – {t.timestamp} ms
-                        </li>
-                    ))}
+                    // compute delta since previous first key
+                    const delta = i === 0 ? 0 : t.timestamp - stats.timestamps_firsts[i - 1].timestamp;
+
+                    // determine color
+                    const color = t.correct
+                    ? speedColor(delta)     
+                    : "rgb(200, 50, 50)";  
+
+                    return (
+                    <span key={i} style={{ color }}>
+                        {t.key}
+                    </span>
+                    );
+                })}
                 </ul>
-            </details>
-
         </div>
     );
 }

@@ -10,8 +10,9 @@ export type Stats = {
     timestamps: { key: string; timestamp: number }[];
     typed: string;
     time: number;
-    wpm?: number;
-    accuracy?: number;
+    wpm: number;
+    accuracy: number;
+    timestamps_firsts: { key: string; timestamp: number; correct: boolean }[]; 
 };
 
 
@@ -38,22 +39,22 @@ export default function Main() {
     const handleEnd = (timestamps: { key: string; timestamp: number }[], typed: string) =>  {
         let timeTotal = performance.now() - startTime.current;
         calculateTestStats(timestamps, typed, timeTotal);
-        
         setEnded(true);
     }
 
     function handleStart() {
         setEnded(false);
         // TODO: make it a server query
-        setTarget("In a world where technology and nature collide, the harmony of existence is tested by the relentless march of progress. In a world where technology and nature collide, the harmony of existence is tested by the relentless march of progress.");
+        setTarget("In a world where technology and nature collide, the harmony of existence is tested by the relentless march of progress. ");
         setTimer(0);
         startTime.current = performance.now();
     }
 
     function calculateTestStats(timestamps: { key: string; timestamp: number }[], typed: string, time: number) {
+
+        // accuracy calc
         let ptr = 0;
         let errors = 0;
-
         while (ptr < target.length && ptr < typed.length) {
             if (target[ptr] != typed[ptr]) {
                 errors++;
@@ -61,10 +62,39 @@ export default function Main() {
             ptr++;
         }
 
+        // offsetting timestamps rel to 0
+        const relative = timestamps.map(entry => ({
+            key: entry.key,
+            timestamp: entry.timestamp - startTime.current
+        }));
+
+        // processing tstmp of only first attempts
+        let cursor = 0;
+        let maxCursor = -1;
+        let timestamps_firsts = [];
+
+        for (const e of relative) {
+            if (e.key === "Backspace") {
+                cursor = Math.max(cursor - 1, 0);
+                continue;
+            }
+
+            if (e.key.length === 1) {
+                const isNewPosition = cursor > maxCursor;
+
+                if (isNewPosition) {
+                    const correct = e.key === target[cursor];
+                    timestamps_firsts.push({key: e.key, timestamp: e.timestamp, correct});
+                    maxCursor = cursor;
+                }
+                cursor++;
+            }
+        }
+
         let accuracy = (target.length - errors) / target.length * 100;
         let wpm = (typed.length / 5) / (time / 60000);
 
-        setStats({timestamps, typed, time, wpm, accuracy});
+        setStats({timestamps: relative, typed, time, wpm, accuracy, timestamps_firsts});
     }
 
     return (
