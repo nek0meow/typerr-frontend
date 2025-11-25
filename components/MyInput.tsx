@@ -5,7 +5,7 @@ import Letter from './Letter';
 
 interface MyInputProps {
     target: string;
-    onEnd: (timestamps: { key: string; timestamp: number }[]) => void;
+    onEnd: (timestamps: { key: string; timestamp: number }[], typed: string) => void;
 }
 
 export default function MyInput({target, onEnd}: MyInputProps) {
@@ -31,7 +31,7 @@ export default function MyInput({target, onEnd}: MyInputProps) {
             const newVal = prev + key;
 
             if (newVal.length >= target.length) {
-                onEnd(keyTimestamps.current);
+                onEnd(keyTimestamps.current, newVal);
             }
 
             return newVal;

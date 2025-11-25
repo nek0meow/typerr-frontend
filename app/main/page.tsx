@@ -1,12 +1,27 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MyInput from '@/components/MyInput';
+import StatsDashboard from '@/components/StatsDashboard';
+import { start } from 'repl';
+import { formatTime } from '@/services/Time';
+
+export type Stats = {
+    timestamps: { key: string; timestamp: number }[];
+    typed: string;
+    time: number;
+    wpm?: number;
+    accuracy?: number;
+};
+
 
 export default function Main() {
     const [ended, setEnded] = useState(false);
     const [target, setTarget] = useState("The battle between foxes and cats in cuteness is as eternal as the struggle between light and darkness.");
     const [timer, setTimer] = useState(0);
+    const startTime = useRef(performance.now());
+    const [stats, setStats] = useState<Stats | null>(null);
+
     useEffect(() => {
         if (ended) return;
 
@@ -18,23 +33,38 @@ export default function Main() {
         }, []);
 
 
-    function formatTime(seconds: number) {
-        const mm = Math.floor(seconds / 60);
-        const ss = seconds % 60;
+    
 
-        return `${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
-    }
-
-    function handleEnd() {
+    const handleEnd = (timestamps: { key: string; timestamp: number }[], typed: string) =>  {
+        let timeTotal = performance.now() - startTime.current;
+        calculateTestStats(timestamps, typed, timeTotal);
+        
         setEnded(true);
     }
 
     function handleStart() {
         setEnded(false);
         // TODO: make it a server query
-        setTarget("In a world where technology and nature collide, the harmony of existence is tested by the relentless march of progress.");
-        
+        setTarget("In a world where technology and nature collide, the harmony of existence is tested by the relentless march of progress. In a world where technology and nature collide, the harmony of existence is tested by the relentless march of progress.");
+        setTimer(0);
+        startTime.current = performance.now();
+    }
 
+    function calculateTestStats(timestamps: { key: string; timestamp: number }[], typed: string, time: number) {
+        let ptr = 0;
+        let errors = 0;
+
+        while (ptr < target.length && ptr < typed.length) {
+            if (target[ptr] != typed[ptr]) {
+                errors++;
+            }
+            ptr++;
+        }
+
+        let accuracy = (target.length - errors) / target.length * 100;
+        let wpm = (typed.length / 5) / (time / 60000);
+
+        setStats({timestamps, typed, time, wpm, accuracy});
     }
 
     return (
@@ -47,11 +77,11 @@ export default function Main() {
                     onEnd={handleEnd}/>
             </>
             ) : (
-                <p>stats</p>
+                stats && <StatsDashboard stats={stats} />
             )
             }
             <button
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400"
                 onClick={handleStart}>
                 Start new test
             </button>
