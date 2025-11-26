@@ -21,12 +21,17 @@ export default function StatsDashboard({ stats }: StatsDashboardProps) {
 
             <div className="flex justify-between">
                 <span className="font-semibold">WPM:</span>
-                <span>{stats.wpm?.toFixed(1) ?? "-"}</span>
+                <span>{stats.wpm.toFixed(1) ?? "-"}</span>
             </div>
 
             <div className="flex justify-between">
                 <span className="font-semibold">Accuracy:</span>
-                <span>{stats.accuracy?.toFixed(1) ?? "-"}%</span>
+                <span>{stats.accuracy_fixed.toFixed(1) ?? "-"}%</span>
+            </div>
+
+            <div className="flex justify-between">
+                <span className="font-semibold">True accuracy:</span>
+                <span>{stats.accuracy.toFixed(1) ?? "-"}%</span>
             </div>
 
             <hr />

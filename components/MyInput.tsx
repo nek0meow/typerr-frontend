@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import Letter from './Letter';
+import { useEffect } from 'react';
 
 interface MyInputProps {
     target: string;
@@ -11,6 +12,7 @@ interface MyInputProps {
 export default function MyInput({target, onEnd}: MyInputProps) {
     const [typed, setTyped] = useState("");
     const keyTimestamps = useRef<{key: string, timestamp: number}[]>([]);
+    const finished = useRef(false);
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         const key = e.key;
@@ -26,17 +28,17 @@ export default function MyInput({target, onEnd}: MyInputProps) {
             return;
         }
         
-        keyTimestamps.current.push({key: key, timestamp: now})
-        setTyped(prev => {
-            const newVal = prev + key;
-
-            if (newVal.length >= target.length) {
-                onEnd(keyTimestamps.current, newVal);
-            }
-
-            return newVal;
-        });
+        keyTimestamps.current.push({key: key, timestamp: now});
+        setTyped(prev => prev + key);
     }
+
+    useEffect(() => {
+        if (!finished.current && typed.length >= target.length) {
+            finished.current = true;
+            onEnd(keyTimestamps.current, typed);
+        }
+    }, [typed, target.length, onEnd]);
+
 
     return (
         <div 
