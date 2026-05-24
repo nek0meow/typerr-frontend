@@ -1,6 +1,4 @@
-'use client'
-
-import type { Stats } from '@/app/main/page';
+import type { Stats } from '@/pages/protected/main-page/page';
 import { formatTime } from '@/services/Time';
 import { speedColor } from '@/services/ResultVisualization';
 
@@ -45,16 +43,16 @@ export default function StatsDashboard({ stats }: StatsDashboardProps) {
 
                     // determine color
                     const color = t.correct
-                    ? speedColor(delta)     
-                    : "rgb(200, 50, 50)";  
+                        ? speedColor(delta)
+                        : "rgb(200, 50, 50)";
 
                     return (
-                    <span key={i} style={{ color }}>
-                        {t.key}
-                    </span>
+                        <span key={i} style={{ color }}>
+                            {t.key}
+                        </span>
                     );
                 })}
-                </ul>
+            </ul>
         </div>
     );
 }

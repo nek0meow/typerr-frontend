@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/services/useAuth';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import Link from 'next/link';
+import { AppRoute } from '@/const/const';
 
 type TestResultData = {
     id: number;
@@ -58,7 +59,7 @@ export default function ProfileDashboard() {
                 </ResponsiveContainer>
             )}
 
-            <Link href="/main" className="block mt-6 w-full">
+            <Link href={AppRoute.Main} className="block mt-6 w-full">
                 <button className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-400">
                     To Tests
                 </button>

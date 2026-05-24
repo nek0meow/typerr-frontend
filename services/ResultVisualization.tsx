@@ -1,16 +1,16 @@
 export function speedColor(delta: number) {
   const t = normalize(delta); // -1..1
 
-  // delta near base speed → neutral color
+  // delta near base speed -> neutral color
   if (Math.abs(t) < 0.15) return "inherit";
 
   if (t < 0) {
-    // faster → greener
-    const intensity = Math.round(180 + 75 * Math.abs(t)); // 180→255
+    // faster -> greener
+    const intensity = Math.round(180 + 75 * Math.abs(t));
     return `rgb(0, ${intensity}, 0)`;
   } else {
-    // slower → redder
-    const intensity = Math.round(180 + 75 * t); // 180→255
+    // slower -> redder
+    const intensity = Math.round(180 + 75 * t);
     return `rgb(${intensity}, 0, 0)`;
   }
 }

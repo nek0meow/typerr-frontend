@@ -16,12 +16,12 @@ export default function Auth() {
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        
+
         const emailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/
 
         if (formData.password !== formData.confirmPassword) {
@@ -66,29 +66,29 @@ export default function Auth() {
             <h1 className="text-3xl font-bold mb-4">Register</h1>
             <form onSubmit={handleSubmit}>
                 {error && (<div className="mb-4 text-center bg-red-500 ">{error}</div>)}
-                <input 
-                    name="username" 
+                <input
+                    name="username"
                     placeholder="Username"
                     onChange={handleChange}
-                    className="border p-2 mb-4 w-full block" 
+                    className="border p-2 mb-4 w-full block"
                 />
-                <input 
-                    name="email" 
-                    type="email" 
+                <input
+                    name="email"
+                    type="email"
                     placeholder="Email"
                     onChange={handleChange}
-                    className="border p-2 mb-4 w-full block" 
+                    className="border p-2 mb-4 w-full block"
                 />
-                <input 
-                    name="password" 
-                    type="password" 
+                <input
+                    name="password"
+                    type="password"
                     placeholder="Password"
                     onChange={handleChange}
                     className="border p-2 mb-4 w-full block"
                 />
-                <input 
-                    name="confirmPassword" 
-                    type="password" 
+                <input
+                    name="confirmPassword"
+                    type="password"
                     placeholder="Confirm password"
                     onChange={handleChange}
                     className="border p-2 mb-4 w-full block"
@@ -100,9 +100,9 @@ export default function Auth() {
                         To Login
                     </button>
                 </Link>
-                
+
             </form>
         </main>
-        
+
     )
 }
