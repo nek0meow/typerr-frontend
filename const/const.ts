@@ -11,8 +11,9 @@ const AuthorizationStatus = {
     Auth: "AUTH"
 } as const;
 
-
 type AppRoute = (typeof AppRoute)[keyof typeof AppRoute];
 type AuthorizationStatus = (typeof AuthorizationStatus)[keyof typeof AuthorizationStatus];
 
-export { AuthorizationStatus, AppRoute };
+const API_HOST = 'http://localhost:8090/api'
+
+export { AuthorizationStatus, AppRoute, API_HOST };

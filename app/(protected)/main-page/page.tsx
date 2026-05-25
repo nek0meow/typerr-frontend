@@ -4,6 +4,8 @@ import StatsDashboard from '@/components/stats-dashboard/stats-dashboard';
 import Link from 'next/link';
 import { formatTime } from '@/services/Time';
 import { useAuth } from '@/services/useAuth';
+import Header from '@/components/header/header';
+import { API_HOST } from '@/const/const';
 
 export type Stats = {
     timestamps: { key: string; timestamp: number }[];
@@ -113,7 +115,7 @@ export default function MainPage() {
 
 
     async function sendTestData(stats: Stats, target: string) {
-        fetch("http://localhost:8090/api/test", {
+        fetch(`${API_HOST}/test`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -132,31 +134,26 @@ export default function MainPage() {
 
     if (loading) return <p>Loading...</p>;
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-8">
-            {user && (
-                <div className="absolute top-4 right-4 text-lg font-semibold">
-                    You are logged in as:{' '}
-                    <Link href="/profile" className="text-blue-500 hover:underline">
-                        {user.username}
-                    </Link>
-                </div>
-            )}
-            {!ended ? (
-                <>
-                    <div>{formatTime(timer)}</div>
-                    <MyInput
-                        target={target}
-                        onEnd={handleEnd} />
-                </>
-            ) : (
-                stats && <StatsDashboard stats={stats} />
-            )
-            }
-            <button
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400"
-                onClick={handleStart}>
-                Start new test
-            </button>
+        <div className="min-h-screen">
+            <Header user={user} />
+            <div className="flex flex-col items-center justify-center p-8">
+                {!ended ? (
+                    <>
+                        <div>{formatTime(timer)}</div>
+                        <MyInput
+                            target={target}
+                            onEnd={handleEnd} />
+                    </>
+                ) : (
+                    stats && <StatsDashboard stats={stats} />
+                )
+                }
+                <button
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400"
+                    onClick={handleStart}>
+                    Start new test
+                </button>
+            </div>
         </div>
     )
 

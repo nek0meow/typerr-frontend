@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { API_HOST, AppRoute } from "@/const/const";
 
 interface UserData {
     username: string;
@@ -15,12 +16,12 @@ export function useAuth() {
 
     useEffect(() => {
         (async () => {
-            const res = await fetch("http://localhost:8090/api/auth/me", {
+            const res = await fetch(`${API_HOST}/auth/me`, {
                 credentials: "include",
             });
 
             if (res.status === 401) {
-                router.push("/login");
+                router.push(AppRoute.Login);
                 return;
             }
 

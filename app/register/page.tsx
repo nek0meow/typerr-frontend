@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { API_HOST, AppRoute } from '@/const/const';
 
 export default function Auth() {
     const [formData, setFormData] = useState({
@@ -37,7 +38,7 @@ export default function Auth() {
         setError("");
 
         try {
-            const res = await fetch('http://localhost:8090/api/auth/register', {
+            const res = await fetch(`${API_HOST}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -48,7 +49,7 @@ export default function Auth() {
             });
 
             if (res.ok) {
-                router.push('/main');
+                router.push(AppRoute.Main);
             } else {
                 const text = await res.text();
                 setError(text || "Registration failed");

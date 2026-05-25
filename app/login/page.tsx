@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { AppRoute } from '@/const/const';
+import { API_HOST, AppRoute } from '@/const/const';
 import { useRouter } from 'next/navigation';
 
 export default function Auth() {
@@ -10,7 +10,7 @@ export default function Auth() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        isRememberMe: false
+        rememberMe: false
     });
     const [error, setError] = useState("");
 
@@ -25,7 +25,7 @@ export default function Auth() {
 
         const email = formData.email as string;
         const password = formData.password as string;
-        const isRememberMe = formData.isRememberMe;
+        const rememberMe = formData.rememberMe;
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -37,10 +37,10 @@ export default function Auth() {
         setError("");
 
         try {
-            const res = await fetch('http://localhost:8090/api/auth/login', {
+            const res = await fetch(`${API_HOST}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, isRememberMe }),
+                body: JSON.stringify({ email, password, rememberMe }),
                 credentials: 'include'
             });
 
@@ -80,10 +80,10 @@ export default function Auth() {
                 <input
                     name="isRememberMe"
                     type="checkbox"
-                    checked={formData.isRememberMe}
+                    checked={formData.rememberMe}
                     onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        isRememberMe: e.target.checked
+                        rememberMe: e.target.checked
                     }))}
                 />
                 <label htmlFor="isRememberMe">

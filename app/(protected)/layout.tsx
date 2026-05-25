@@ -1,3 +1,5 @@
+'use client'
+
 import { AppRoute, AuthorizationStatus } from '@/const/const';
 import { useRouter } from 'next/navigation';
 

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/services/useAuth';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import Link from 'next/link';
-import { AppRoute } from '@/const/const';
+import { API_HOST, AppRoute } from '@/const/const';
 
 type TestResultData = {
     id: number;
@@ -23,7 +23,7 @@ export default function ProfileDashboard() {
 
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:8090/api/profile_stats', {
+                const res = await fetch(`${API_HOST}/profile_stats`, {
                     credentials: 'include',
                 });
                 if (!res.ok) throw new Error('Failed to fetch test data');
