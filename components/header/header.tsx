@@ -1,6 +1,7 @@
 'use client'
 
 import { API_HOST, AppRoute } from "@/const/const";
+import { sendLogout } from "@/services/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -13,13 +14,9 @@ interface HeaderProps {
 export default function Header({ user }: HeaderProps) {
     const router = useRouter();
 
-    function handleLogout() {
-        fetch(`${API_HOST}/auth/logout`, {
-            method: 'POST',
-            credentials: 'include',
-        });
+    const handleLogout = async () => {
+        sendLogout();
         router.push(AppRoute.Login);
-
     }
 
     return (

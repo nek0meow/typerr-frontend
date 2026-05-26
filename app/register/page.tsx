@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { API_HOST, AppRoute } from '@/const/const';
+import { sendRegistration } from '@/services/api';
 
 export default function Auth() {
     const [formData, setFormData] = useState({
@@ -24,7 +25,6 @@ export default function Auth() {
         e.preventDefault();
 
         const emailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/
-
         if (formData.password !== formData.confirmPassword) {
             setError("Passwords do not match");
             return;
@@ -38,27 +38,11 @@ export default function Auth() {
         setError("");
 
         try {
-            const res = await fetch(`${API_HOST}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: formData.username,
-                    email: formData.email,
-                    password: formData.password
-                })
-            });
-
-            if (res.ok) {
-                router.push(AppRoute.Main);
-            } else {
-                const text = await res.text();
-                setError(text || "Registration failed");
-            }
+            await sendRegistration(formData);
+            router.push(AppRoute.Main);
         } catch (err) {
-            console.error(err);
-            setError("Network error");
+            setError((err as Error).message);
         }
-
     }
 
 

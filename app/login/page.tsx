@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { API_HOST, AppRoute } from '@/const/const';
 import { useRouter } from 'next/navigation';
+import { sendLogin } from '@/services/api';
 
 export default function Auth() {
     const router = useRouter();
@@ -22,11 +23,8 @@ export default function Auth() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-
+        // simple validation
         const email = formData.email as string;
-        const password = formData.password as string;
-        const rememberMe = formData.rememberMe;
-
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
         if (!emailRegex.test(email)) {
@@ -37,22 +35,10 @@ export default function Auth() {
         setError("");
 
         try {
-            const res = await fetch(`${API_HOST}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, rememberMe }),
-                credentials: 'include'
-            });
-
-            if (res.ok) {
-                router.push(AppRoute.Main);
-            } else {
-                const text = await res.text();
-                setError(text || "Login failed");
-            }
+            await sendLogin(formData);
+            router.push(AppRoute.Main);
         } catch (err) {
-            console.error(err);
-            setError("Network error");
+            setError((err as Error).message);
         }
 
     }

@@ -1,21 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MyInput from '@/components/input-field/input-field';
 import StatsDashboard from '@/components/stats-dashboard/stats-dashboard';
-import Link from 'next/link';
 import { formatTime } from '@/services/Time';
 import { useAuth } from '@/services/useAuth';
 import Header from '@/components/header/header';
-import { API_HOST } from '@/const/const';
-
-export type Stats = {
-    timestamps: { key: string; timestamp: number }[];
-    typed: string;
-    time: number;
-    wpm: number;
-    accuracy: number;
-    accuracy_fixed: number;
-    timestamps_firsts: { key: string; timestamp: number; correct: boolean }[];
-};
+import { calculateTestStats } from '@/util/stat';
+import { sendTestData } from '@/services/api';
+import { TestStats } from '@/types/types';
 
 
 export default function MainPage() {
@@ -25,7 +16,7 @@ export default function MainPage() {
     const [target, setTarget] = useState("The battle between foxes and cats in cuteness is as eternal as the struggle between light and darkness.");
     const [timer, setTimer] = useState(0);
     const startTime = useRef(performance.now());
-    const [stats, setStats] = useState<Stats | null>(null);
+    const [stats, setStats] = useState<TestStats | null>(null);
 
     useEffect(() => {
         if (ended) return;
@@ -40,7 +31,7 @@ export default function MainPage() {
 
     const handleEnd = (timestamps: { key: string; timestamp: number }[], typed: string) => {
         const timeTotal = performance.now() - startTime.current;
-        const newStats = calculateTestStats(timestamps, typed, timeTotal);
+        const newStats = calculateTestStats(timestamps, typed, target, timeTotal, startTime.current);
         setStats(newStats);
         sendTestData(newStats, target);
         setEnded(true);
@@ -55,82 +46,6 @@ export default function MainPage() {
         startTime.current = performance.now();
     }
 
-    function calculateTestStats(timestamps: { key: string; timestamp: number }[], typed: string, time: number) {
-
-        let ptr = 0;
-        let errors = 0;
-        while (ptr < target.length && ptr < typed.length) {
-            if (target[ptr] != typed[ptr]) {
-                errors++;
-            }
-            ptr++;
-        }
-
-        // offsetting timestamps rel to 0
-        const relative = timestamps.map(entry => ({
-            key: entry.key,
-            timestamp: entry.timestamp - startTime.current
-        }));
-
-        // processing tstmp of only first attempts
-        let cursor = 0;
-        let maxCursor = -1;
-        const timestamps_firsts = [];
-
-        for (const e of relative) {
-            if (e.key === "Backspace") {
-                cursor = Math.max(cursor - 1, 0);
-                continue;
-            }
-
-            if (e.key.length === 1) {
-                const isNewPosition = cursor > maxCursor;
-
-                if (isNewPosition) {
-                    const correct = e.key === target[cursor];
-                    timestamps_firsts.push({ key: e.key, timestamp: e.timestamp, correct });
-                    maxCursor = cursor;
-                }
-                cursor++;
-            }
-        }
-
-        ptr = 0;
-        let true_errors = 0;
-        while (ptr < target.length && ptr < timestamps_firsts.length) {
-            if (target[ptr] != timestamps_firsts[ptr].key) {
-                true_errors++;
-            }
-            ptr++;
-        }
-
-
-        const accuracy_fixed = (target.length - errors) / target.length * 100;
-        const accuracy = (target.length - true_errors) / target.length * 100;
-        const wpm = (typed.length / 5) / (time / 60000);
-
-        const res = { timestamps: relative, typed, time, wpm, accuracy, accuracy_fixed, timestamps_firsts };
-        return res;
-    }
-
-
-    async function sendTestData(stats: Stats, target: string) {
-        fetch(`${API_HOST}/test`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                target,
-                typed: stats.typed,
-                time: stats.time,
-                wpm: stats.wpm,
-                accuracy: stats.accuracy,
-                timestamps_firsts: stats.timestamps_firsts
-            }),
-        })
-    }
 
     if (loading) return <p>Loading...</p>;
     return (

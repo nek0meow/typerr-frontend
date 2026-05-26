@@ -5,6 +5,8 @@ import { useAuth } from '@/services/useAuth';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import Link from 'next/link';
 import { API_HOST, AppRoute } from '@/const/const';
+import Header from '@/components/header/header';
+import { fetchProfileTestStats } from '@/services/api';
 
 type TestResultData = {
     id: number;
@@ -22,18 +24,10 @@ export default function ProfileDashboard() {
         if (!user) return;
 
         const fetchData = async () => {
-            try {
-                const res = await fetch(`${API_HOST}/profile_stats`, {
-                    credentials: 'include',
-                });
-                if (!res.ok) throw new Error('Failed to fetch test data');
-                const data = await res.json();
-                setTestResults(data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoadingData(false);
-            }
+            setLoadingData(true);
+            const stats = await fetchProfileTestStats();
+            setTestResults(stats);
+            setLoadingData(false);
         };
 
         fetchData();
@@ -41,7 +35,8 @@ export default function ProfileDashboard() {
 
     if (loading || loadingData) return <p>Loading...</p>;
 
-    return (
+    return (<>
+        <Header user={user} />
         <div className="p-8 flex flex-col items-center">
             <h1 className="text-2xl font-bold mb-4">Your WPM Over Time</h1>
 
@@ -52,10 +47,13 @@ export default function ProfileDashboard() {
                     <LineChart data={testResults}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="id" label={{ value: 'Test #', position: 'insideBottomRight', offset: 0 }} />
-                        <YAxis label={{ value: 'WPM', angle: -90, position: 'insideLeft' }} />
+                        <YAxis yAxisId='wpm' label={{ value: 'WPM', angle: -90, position: 'insideLeft' }} stroke='#8884d8' />
+                        <YAxis yAxisId='acc' orientation='right' label={{ value: 'Acc', angle: 90, position: 'insideRight' }} stroke="#ff0f0f76" />
                         <Tooltip />
-                        <Line type="monotone" dataKey="wpm" stroke="#8884d8" strokeWidth={2} />
+                        <Line yAxisId='wpm' type="monotone" dataKey="wpm" stroke="#8884d8" strokeWidth={2} />
+                        <Line yAxisId='acc' type="monotone" dataKey="accuracy" stroke="#f3000049" strokeWidth={2} />
                     </LineChart>
+
                 </ResponsiveContainer>
             )}
 
@@ -65,5 +63,6 @@ export default function ProfileDashboard() {
                 </button>
             </Link>
         </div>
+    </>
     );
 }
