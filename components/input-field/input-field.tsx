@@ -4,16 +4,23 @@ import { useEffect } from 'react';
 interface MyInputProps {
     target: string;
     onEnd: (timestamps: { key: string; timestamp: number }[], typed: string) => void;
+    onFirstKeyPress: () => void;
 }
 
-export default function InputField({ target, onEnd }: MyInputProps) {
+export default function InputField({ target, onEnd, onFirstKeyPress }: MyInputProps) {
     const [typed, setTyped] = useState("");
     const keyTimestamps = useRef<{ key: string, timestamp: number }[]>([]);
+    const started = useRef(false);
     const finished = useRef(false);
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         const key = e.key;
         const now = performance.now();
+
+        if (!started.current) {
+            started.current = true;
+            onFirstKeyPress();
+        }
 
         if (key == "Backspace") {
             setTyped(prev => prev.slice(0, -1));
@@ -40,6 +47,7 @@ export default function InputField({ target, onEnd }: MyInputProps) {
     useEffect(() => {
         if (!finished.current && typed.length >= target.length) {
             finished.current = true;
+            started.current = false;
             onEnd(keyTimestamps.current, typed);
         }
     }, [typed, target.length, onEnd]);

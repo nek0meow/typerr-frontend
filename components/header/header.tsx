@@ -42,7 +42,10 @@ export default function Header({ user }: HeaderProps) {
                             {user.username}
                         </Link>
 
-                        <button onClick={handleLogout}>
+                        <button
+                            className="bg-red-500 text-white hover: text-red-600 hover: underline hover: cursor-pointer"
+                            onClick={handleLogout}
+                        >
                             Logout
                         </button>
                     </div>
