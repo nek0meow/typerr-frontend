@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/services/useAuth';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import Link from 'next/link';
-import { API_HOST, AppRoute } from '@/const/const';
+import { AppRoute } from '@/const/const';
 import Header from '@/components/header/header';
 import { fetchProfileTestStats } from '@/services/api';
 
@@ -46,12 +46,37 @@ export default function ProfileDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={testResults}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="id" label={{ value: 'Test #', position: 'insideBottomRight', offset: 0 }} />
+                        <XAxis dataKey="savedAt"
+                            tickFormatter={(date) => {
+                                const d = new Date(date);
+                                return d.toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: d.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                                });
+                            }}
+                        />
                         <YAxis yAxisId='wpm' label={{ value: 'WPM', angle: -90, position: 'insideLeft' }} stroke='#8884d8' />
                         <YAxis yAxisId='acc' orientation='right' label={{ value: 'Acc', angle: 90, position: 'insideRight' }} stroke="#ff0f0f76" />
-                        <Tooltip />
+                        <Tooltip
+                            labelFormatter={(label) => {
+                                return new Date(label).toLocaleString('ru-RU', {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }}
+                            labelStyle={{
+                                color: '#333',
+                                fontWeight: 'bold',
+                                marginBottom: '4px'
+                            }}
+
+                        />
                         <Line yAxisId='wpm' type="monotone" dataKey="wpm" stroke="#8884d8" strokeWidth={2} />
-                        <Line yAxisId='acc' type="monotone" dataKey="accuracy" stroke="#f3000049" strokeWidth={2} />
+                        <Line yAxisId='acc' type="monotone" dataKey="accuracy" stroke="#cd0000d8" strokeWidth={2} />
                     </LineChart>
 
                 </ResponsiveContainer>

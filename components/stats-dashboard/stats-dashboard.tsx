@@ -1,9 +1,9 @@
-import type { Stats } from '@/pages/protected/main-page/page';
 import { formatTime } from '@/services/Time';
 import { speedColor } from '@/services/ResultVisualization';
+import { TestStats } from '@/types/types';
 
 type StatsDashboardProps = {
-    stats: Stats;
+    stats: TestStats;
 };
 
 export default function StatsDashboard({ stats }: StatsDashboardProps) {
@@ -44,7 +44,7 @@ export default function StatsDashboard({ stats }: StatsDashboardProps) {
                     // determine color
                     const color = t.correct
                         ? speedColor(delta)
-                        : "rgb(200, 50, 50)";
+                        : "rgb(255, 70, 224)";
 
                     return (
                         <span key={i} style={{ color }}>

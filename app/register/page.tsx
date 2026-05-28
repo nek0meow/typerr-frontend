@@ -39,7 +39,7 @@ export default function Auth() {
 
         try {
             await sendRegistration(formData);
-            router.push(AppRoute.Main);
+            router.push(AppRoute.Login);
         } catch (err) {
             setError((err as Error).message);
         }

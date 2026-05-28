@@ -32,7 +32,7 @@ export default function Header({ user }: HeaderProps) {
                 {user ? (
                     <div className="flex items-center gap-2 text-base font-medium">
                         <span className="text-white-700">
-                            Logged in as
+                            Logged in as:
                         </span>
 
                         <Link

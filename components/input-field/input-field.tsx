@@ -55,7 +55,7 @@ export default function InputField({ target, onEnd, onFirstKeyPress }: MyInputPr
 
     return (
         <div
-            className="border border-black-400 p-2 focus:border-blue-500"
+            className="border border-black-400 p-2 focus:border-blue-500 text-lg leading-loose"
             tabIndex={0}
             onKeyDown={handleKeyDown}
             autoFocus
